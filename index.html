@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Birthday Surprise</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Deltha&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --pink: #f8a5d0;
+            --purple: #c026d3;
+            --bg-purple: #9d72e9;
+            --bg-indigo: #6e45bc;
+            --glass: rgba(255, 255, 255, 0.28);
+            --card-border: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Deltha', 'Poppins', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--bg-purple) 0%, var(--bg-indigo) 100%);
+        }
+
+        /* Loading page (unchanged) */
+        #loading-page {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #ff9aa2, #ffb7b2, #ffdac1, #e2f0cb, #b5ead7, #c7ceea, #e0bbff, #ff9aa2);
+            background-size: 400% 400%;
+            animation: animatedBg 18s ease infinite;
+            z-index: 1000;
+            transition: opacity 1.2s ease;
+        }
+
+        #loading-page.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes animatedBg {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .center-content { text-align: center; z-index: 5; }
+        .cake-wrapper { margin-bottom: 32px; animation: cakeFloat 3.2s ease-in-out infinite; }
+        .cake { width: 168px; height: 122px; margin: 0 auto; position: relative; }
+
+        .bottom-tier { position: absolute; bottom: 0; left: 8px; width: 152px; height: 52px; background: linear-gradient(#ffb07a, #f48c52); border-radius: 22px 22px 12px 12px; box-shadow: 0 12px 0 #e07a44, inset 0 -10px 15px rgba(0,0,0,0.15); }
+        .top-tier { position: absolute; bottom: 46px; left: 24px; width: 120px; height: 42px; background: linear-gradient(#ffb07a, #f48c52); border-radius: 18px 18px 10px 10px; box-shadow: 0 10px 0 #e07a44, inset 0 -8px 12px rgba(0,0,0,0.15); }
+        .frosting { position: absolute; bottom: 80px; left: 28px; width: 112px; height: 22px; background: linear-gradient(#ff9ed4, #ff69b4); border-radius: 50% 50% 0 0; box-shadow: inset 0 8px 0 rgba(255,255,255,0.4); }
+        .sprinkles { position: absolute; bottom: 82px; left: 32px; width: 104px; height: 18px; }
+        .sprinkle { position: absolute; width: 7px; height: 14px; border-radius: 3px; }
+        .s1 { left:12%; top:22%; background:#f43f5e; transform:rotate(35deg); }
+        .s2 { left:24%; top:8%;  background:#22d3ee; transform:rotate(-42deg); }
+        .s3 { left:38%; top:28%; background:#a78bfa; transform:rotate(18deg); }
+        .s4 { left:52%; top:12%; background:#facc15; transform:rotate(-28deg); }
+        .s5 { left:66%; top:25%; background:#4ade80; transform:rotate(45deg); }
+        .s6 { left:79%; top:15%; background:#fb7185; transform:rotate(-35deg); }
+
+        .candles { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 108px; display: flex; justify-content: space-between; }
+        .candle { width: 11px; height: 34px; background: linear-gradient(#ffe4c4, #fcd34d); border-radius: 6px 6px 2px 2px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); position: relative; }
+        .flame { position: absolute; top: -19px; left: 50%; transform: translateX(-50%); width: 14px; height: 22px; background: radial-gradient(circle at 40% 30%, #fef08c, #f59e0b 60%, #dc2626); border-radius: 50% 50% 40% 40%; box-shadow: 0 0 14px #fbbf24, 0 0 22px #f59e0b; animation: flameFlicker 0.45s infinite alternate ease-in-out; }
+        .candle:nth-child(2) .flame { animation-delay: 0.12s; }
+        .candle:nth-child(3) .flame { animation-delay: 0.28s; }
+
+        @keyframes flameFlicker { 0% { transform: translateX(-50%) scale(1); height:21px; } 100% { transform: translateX(-50%) scale(1.18); height:24px; } }
+
+        .loading-text { font-family: 'Playfair Display', cursive; font-size: 23px; font-weight: 600; color: #4c1d95; margin-bottom: 24px; text-shadow: 0 3px 8px rgba(255,255,255,0.9); }
+
+        .progress-container { width: 268px; height: 12px; background: rgba(255,255,255,0.45); border-radius: 9999px; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.12), 0 0 12px rgba(255,255,255,0.6); backdrop-filter: blur(4px); }
+        .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, #ff9aa2 0%, #ffb7b2 15%, #ffdac1 30%, #e2f0cb 45%, #b5ead7 60%, #c7ceea 75%, #e0bbff 90%, #ff9aa2 100%); border-radius: 9999px; animation: progressFill 5s ease-in-out forwards, gradientShift 8s linear infinite; box-shadow: 0 0 16px rgba(255,154,162,0.7); }
+
+        @keyframes progressFill { to { width: 94%; } }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes cakeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+        /* ──────────────────────────────────────── */
+        /* INTERACTIVE CARD                         */
+        /* ──────────────────────────────────────── */
+        #confetti-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .slide {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transform: scale(1.05) translateY(15px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 1;
+        }
+
+        .slide.active { opacity: 1; visibility: visible; transform: scale(1) translateY(0); z-index: 10; }
+
+        .card {
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border); border-radius: 35px; padding: 70px 30px 90px;
+            width: 92%; max-width: 400px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;
+        }
+
+        .title { 
+            font-family: 'Deltha', cursive; 
+            font-size: 2.8rem; 
+            font-weight: 900; 
+            margin-bottom: 8px;            /* \~8px gap to cake */
+            line-height: 1.1; 
+        }
+
+        .subtitle { 
+            font-family: 'Deltha', cursive; 
+            font-size: 1.55rem; 
+            font-weight: 800; 
+            opacity: 0.95; 
+            margin-bottom: 15px; 
+            line-height: 1.45; 
+        }
+
+        .action-btn {
+            font-family: 'Deltha', cursive; 
+            background: white; color: #333; border: none; padding: 16px 0; width: 100%;
+            border-radius: 16px; font-size: 1.25rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease;
+        }
+
+        .action-btn:active { transform: scale(0.96); background-color: #f8f8f8; }
+
+        /* Cake section – SMALLER cake (shorter height), centered, below title, above button */
+        .cake-section {
+            margin: 0 auto 6px;            /* \~6px gap to button */
+            width: 160px;                  /* smaller width too */
+            height: 140px;                 /* ← shorter height (cake less tall) */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .interactive-cake {
+            width: 160px;
+            height: 130px;                 /* shorter */
+            position: relative;
+        }
+
+        .cake-layer-1 {
+            position: absolute; bottom: 0; left: 10%; width: 80%; height: 45%;
+            background: linear-gradient(to bottom, #d2691e, #8b4513);
+            border-radius: 16px 16px 8px 8px;
+            box-shadow: inset 0 7px 10px rgba(0,0,0,0.25), 0 5px 8px rgba(0,0,0,0.18);
+        }
+
+        .cake-layer-2 {
+            position: absolute; bottom: 38%; left: 20%; width: 60%; height: 32%;
+            background: linear-gradient(to bottom, #cd853f, #a0522d);
+            border-radius: 12px 12px 6px 6px;
+            box-shadow: inset 0 5px 8px rgba(0,0,0,0.18);
+        }
+
+        .cake-frosting {
+            position: absolute; bottom: 65%; left: 24%; width: 52%; height: 26%;
+            background: linear-gradient(to bottom, #ff9ed4, #ff69b4);
+            border-radius: 50% 50% 0 0;
+            box-shadow: inset 0 5px 8px rgba(255,255,255,0.5);
+        }
+
+        .cake-sprinkle {
+            position: absolute; width: 6px; height: 10px; border-radius: 2px;
+        }
+        .spr1 { top: 50%; left: 40%; background:#ff3366; transform:rotate(30deg); }
+        .spr2 { top: 55%; left: 52%; background:#00ccff; transform:rotate(-35deg); }
+        .spr3 { top: 60%; left: 61%; background:#ffcc00; transform:rotate(20deg); }
+        .spr4 { top: 52%; left: 68%; background:#33ff66; transform:rotate(-45deg); }
+
+        .candle-box {
+            position: absolute;
+            bottom: 80%;              /* attached to frosting top */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+
+        .candle-stick {
+            width: 9px;
+            height: 40px;
+            background: linear-gradient(#fffacd, #ffd700);
+            border-radius: 5px 5px 2px 2px;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.25);
+            position: relative;
+        }
+
+        .candle-flame {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 24px;
+            opacity: 0;
+            background: radial-gradient(circle at 40% 30%, #fff176, #ff9800 60%, #f44336);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 0 12px #ffeb3b, 0 0 20px #f44336;
+            transition: opacity 0.6s ease;
+        }
+
+        .candle-flame.lit {
+            opacity: 1;
+            animation: flameFlicker 0.45s infinite alternate ease-in-out;
+        }
+
+        @keyframes flameFlicker {
+            0%   { transform: translateX(-50%) scale(1); height: 22px; }
+            100% { transform: translateX(-50%) scale(1.12); height: 26px; }
+        }
+
+        /* Balloons, heart, message etc. */
+        .balloon-wrap { display: flex; justify-content: center; gap: 20px; margin: 35px 0; }
+        .balloon { font-size: 4rem; cursor: pointer; transition: all 0.3s; }
+        .balloon.popped { transform: scale(3); opacity: 0; pointer-events: none; }
+
+        .heart-icon { font-size: 4.5rem; margin-bottom: 25px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        .message-box {
+            text-align: left; background: rgba(255,255,255,0.18); padding: 30px;
+            border-radius: 25px; font-size: 1.05rem; line-height: 1.8; color: #fff; margin-bottom: 30px;
+            font-family: 'Deltha', cursive;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading page -->
+<div id="loading-page">
+    <div class="center-content">
+        <div class="cake-wrapper">
+            <div class="cake">
+                <div class="bottom-tier"></div>
+                <div class="top-tier"></div>
+                <div class="frosting"></div>
+                <div class="sprinkles">
+                    <div class="sprinkle s1"></div>
+                    <div class="sprinkle s2"></div>
+                    <div class="sprinkle s3"></div>
+                    <div class="sprinkle s4"></div>
+                    <div class="sprinkle s5"></div>
+                    <div class="sprinkle s6"></div>
+                </div>
+                <div class="candles">
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle"><div class="flame"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-text">Loading your birthday surprise...</div>
+
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Slide 1 -->
+<div class="slide active" id="slide1">
+    <div class="card">
+        <div style="font-size: 3.5rem; margin-bottom: 15px;">🎂</div>
+        <h1 class="title">Happy<br>Birthday!</h1>
+        <p class="subtitle">A Cutiepie was born today, 15 years ago!</p>
+        <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8; margin-bottom: 35px;">Yes, it's you! A little surprise awaits...</p>
+        <button class="action-btn" onclick="nextSlide('slide2')">🎁 Start the surprise</button>
+    </div>
+</div>
+
+<!-- Slide 2 – Make it Special (smaller cake, below title, above button) -->
+<div class="slide" id="slide2">
+    <div class="card">
+        <h1 class="title" style="font-size: 2.8rem;">Make it Special</h1>
+
+        <div class="cake-section">
+            <div class="interactive-cake">
+                <div class="cake-layer-1"></div>
+                <div class="cake-layer-2"></div>
+                <div class="cake-frosting"></div>
+                <div class="cake-sprinkle spr1"></div>
+                <div class="cake-sprinkle spr2"></div>
+                <div class="cake-sprinkle spr3"></div>
+                <div class="cake-sprinkle spr4"></div>
+
+                <div class="candle-box">
+                    <div class="candle-stick"><div class="candle-flame" id="flame1"></div></div>
+                    <div class="candle-stick"><div class="candle-flame" id="flame2"></div></div>
+                    <div class="candle-stick"><div class="candle-flame" id="flame3"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-decorate">
+            <button class="action-btn" onclick="goToLighting()">Next Step ✨</button>
+        </div>
+
+        <div id="step-light" style="display:none;">
+            <p class="subtitle">Make a wish... then light the candle!</p>
+            <button class="action-btn" onclick="ignite()">Light the Candle 🕯️</button>
+        </div>
+
+        <div id="step-done" style="display:none;">
+            <button class="action-btn" onclick="nextSlide('slide3')">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3 – Balloons -->
+<div class="slide" id="slide3">
+    <div class="card">
+        <div class="cake-icon">
+            <div class="cake-bottom"></div>
+            <div class="cake-middle"></div>
+            <div class="cake-top"></div>
+            <div class="cake-sprinkle sprinkle1"></div>
+            <div class="cake-sprinkle sprinkle2"></div>
+            <div class="cake-sprinkle sprinkle3"></div>
+        </div>
+
+        <h1 class="title" style="font-size: 2rem;">Pop the Balloons</h1>
+        <p class="subtitle">Pop all 4 balloons to continue!</p>
+
+        <div class="balloon-wrap">
+            <div class="balloon" onclick="pop(this)">🎈</div>
+            <div class="balloon" onclick="pop(this)">🎈</div>
+            <div class="balloon" onclick="pop(this)">🎈</div>
+            <div class="balloon" onclick="pop(this)">🎈</div>
+        </div>
+        <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8;">Click each balloon to pop it!</p>
+    </div>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide" id="slide4">
+    <div class="card">
+        <h1 class="title">You are a Cutiee</h1>
+        <div class="heart-icon">❤️</div>
+        <p class="subtitle">Just like we always knew!</p>
+        <button class="action-btn" onclick="nextSlide('slide5')">Next →</button>
+    </div>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide" id="slide5">
+    <div class="card">
+        <div style="font-size: 4rem; margin-bottom: 20px;">📜</div>
+        <h1 class="title" style="font-size: 2rem;">A Special Message</h1>
+        <p class="subtitle">Tap to open your birthday message</p>
+        <button class="action-btn" onclick="nextSlide('slide6')">Tap to Open 💌</button>
+    </div>
+</div>
+
+<!-- Slide 6 -->
+<div class="slide" id="slide6">
+    <div class="card" style="padding: 45px 25px;">
+        <h1 class="title" style="font-size: 1.6rem; margin-bottom: 20px;">To our Birthday Star ✨</h1>
+        <div class="message-box">
+            <p>Happy Birthday, Cutiepie! 🎉</p><br>
+            <p>You deserve all the happiness, love, and smiles in the world today and always.</p><br>
+            <p>You have this special way of making everything around you brighter, your smile, your kindness, and the way you make people feel truly cared for.</p><br>
+            <p>I hope your day is filled with laughter, surprises, and moments that make your heart happy.</p><br>
+            <p class="message-signature">with lots of Love ❤️</p>
+        </div>
+        <button class="action-btn" style="margin-top: 30px;" onclick="location.reload()">🔄 Start Over</button>
+    </div>
+</div>
+
+<script>
+    // Loading → Main transition
+    const loadingPage = document.getElementById('loading-page');
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            loadingPage.classList.add('hidden');
+            setTimeout(() => {
+                loadingPage.remove();
+                document.getElementById('slide1').classList.add('active');
+            }, 1200);
+        }, 5200);
+    });
+
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let balloonsPopped = 0;
+    let particles = [];
+
+    function nextSlide(id) {
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'slide4' || id === 'slide6') startConfetti();
+    }
+
+    function goToLighting() {
+        document.getElementById('step-decorate').style.display = 'none';
+        document.getElementById('step-light').style.display = 'block';
+    }
+
+    function ignite() {
+        document.getElementById('flame1').classList.add('lit');
+        document.getElementById('flame2').classList.add('lit');
+        document.getElementById('flame3').classList.add('lit');
+        document.getElementById('step-light').style.display = 'none';
+        document.getElementById('step-done').style.display = 'block';
+    }
+
+    function pop(el) {
+        if (el.classList.contains('popped')) return;
+        el.classList.add('popped');
+        balloonsPopped++;
+        if (balloonsPopped === 4) {
+            setTimeout(() => nextSlide('slide4'), 600);
+        }
+    }
+
+    function startConfetti() {
+        for(let i = 0; i < 100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: -20,
+                size: Math.random() * 7 + 3,
+                speedY: Math.random() * 4 + 2,
+                speedX: (Math.random() - 0.5) * 3,
+                color: `hsl(${Math.random() * 360}, 90%, 75%)`
+            });
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            p.y += p.speedY;
+            p.x += p.speedX;
+            if (p.y > canvas.height) particles.splice(i, 1);
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    animate();
+</script>
+</body>
+</html>
